@@ -1,119 +1,133 @@
-# Concerti disponibili
-listaConcerti = ["Tiziano Ferro (0)", "Shade(1)", "Mirko Camparus(2)", " Geolier(3)", "Malgioglio(4)", "Gigi D'Alessio(5)"]
+import random
 
-# Posti disponibili
-postiTiziano = 0
-postiShade = 0
-postiMirko = 0
-postiGeolier = 0
-postiMalgioglio = 0
-postiGigi = 0
+# Lista dei concerti disponibili
+listaConcerti = [
+    "Tiziano Ferro", 
+    "Shade", 
+    "Mirko Camparus", 
+    "Geolier", 
+    "Malgioglio", 
+    "Gigi D'Alessio"
+]
 
-concertiScelti = []
+# Posti disponibili per ogni concerto
+postiDisponibili = {concerto: 10 for concerto in listaConcerti}
 
+# Utenti registrati (dizionario con nome utente e password)
+utentiRegistrati = {}
 
-def sign_in() ->list:
-    """return an account """
-    name = input("Enter your name: ")
-    _password = input("Enter your password: ")
-    _symbols = ["@", "#", "+"]
-    registred_account = []
-    # verifies your name and password
-    if name and _password in registred_account:
-        print("This name already exist! Select another one.")
-    # starting process 
-    else:
-        if _symbols[0] or _symbols[1] or _symbols[2] in _password:
-            print("Your password is strong")
-        # verifies your name
-        elif name in registred_account:
-            print("you should select one of this symbols")
-            print(_symbols[0], _symbols[1], _symbols[2])
-            print("to make more secure your password")
-        # finally creatre a new registred_account
-        else:
-            registred_account.append(name)# add your name
-            registred_account.append(_password)# add your password
-            registred_account.append(True)
-            print(registred_account)
-
-
-def has_a_secret(_password: str) -> bool:
-    """returns True if you have a secret password, False otherwise"""
-    if _password == "GHIBLI":
-        return True
-    else:
-        return False
-
-def is_logged(account:list) -> bool:
-    """returns True if an account is logged, False otherwise"""
-    if True in account:
-        return True
-    else:
-        return False
-
-#codice filippo
-def aggiuntaPosti(concertoScelto):
-    match int(concertoScelto):
-        case 0:
-            if postiTiziano == 10:
-                print("Non puoi partecipare al concerto")
-            else:    
-                postiTiziano += 1
-        case 1:
-            if postiShade == 10:
-                print("Non puoi partecipare al concerto")
-            else:    
-                postiShade += 1
-        case 2:
-            if postiMirko == 10:
-                print("Non puoi partecipare al concerto")
-            else:    
-                postiMirko += 1
-        case 3:
-            if postiGeolier == 10:
-                print("Non puoi partecipare al concerto")
-            else:
-                postiGeolier += 1
-        case 4:
-            if postiMalgioglio == 10:
-                print("Non puoi partecipare al concerto")
-            else:
-                postiMalgioglio += 1
-        case 5:
-            if postiGigi == 10:
-                print("Non puoi partecipare al concerto")
-            else:
-                postiGigi += 1
-        case _:
-            pass
-    return postiTiziano, postiShade, postiMirko, postiGeolier, postiMalgioglio, postiGigi
+def sign_in():
+    """Registra un nuovo utente con nome e password"""
+    name = input("Inserisci il tuo nome: ")
     
-def regConcerti(): 
-    while quantiConcerti <=3:
-        print(f"I concerti disponibili sono: {listaConcerti}")
+    if name in utentiRegistrati:
+        print("Questo nome utente è già registrato. Scegli un altro nome.")
+        return None
+    
+    password = input("Inserisci una password (deve contenere almeno un simbolo @, # o +): ")
+    
+    if any(s in password for s in ["@", "#", "+"]):
+        utentiRegistrati[name] = password
+        print("Registrazione completata con successo!")
+        return name
+    else:
+        print("La password non è abbastanza sicura. Usa almeno uno dei simboli @, # o +.")
+        return None
+
+def login():
+    """Permette a un utente di accedere"""
+    name = input("Inserisci il tuo nome: ")
+    password = input("Inserisci la tua password: ")
+    
+    if utentiRegistrati.get(name) == password:
+        print("Accesso effettuato con successo!")
+        return name
+    else:
+        print("Nome utente o password errati.")
+        return None
+
+def ha_password_segreta():
+    """Controlla se l'utente conosce la password segreta per aggiungere concerti"""
+    password_segreta = input("Inserisci la password segreta: ")
+    return password_segreta == "GHIBLI"
+
+def aggiuntaPosti(concerto):
+    """Aggiunge un partecipante a un concerto se ci sono posti disponibili"""
+    if postiDisponibili[concerto] > 0:
+        postiDisponibili[concerto] -= 1
+        print(f"Prenotazione confermata per {concerto}! Posti rimanenti: {postiDisponibili[concerto]}")
+        return True
+    else:
+        print("Posti esauriti per questo concerto.")
+        return False
+
+def prenotaConcerto():
+    """Permette a un utente di prenotare fino a 3 concerti"""
+    concertiPrenotati = []
+
+    print("Concerti disponibili:")
+    for i, concerto in enumerate(listaConcerti):
+        print(f"{i} - {concerto} ({postiDisponibili[concerto]} posti disponibili)")
+
+    for _ in range(3):
+        scelta = input("Inserisci il numero del concerto che vuoi prenotare (o premi Invio per terminare): ")
         
-        quantiConcerti = int(input("Inserisci il numero di concerti da vedere (puoi prenotarne al massimo 3)"))
+        if scelta == "":
+            break
 
-        match quantiConcerti:
-            case 1:
-                concertoScelto = int(input("Inserisci il numero del concerto da aggiungere"))
-                listaConcerti.append(listaConcerti[concertoScelto])
-                aggiuntaPosti(concertoScelto)
-                postiTiziano, postiShade, postiMirko, postiGeolier, postiMalgioglio, postiGigi = aggiuntaPosti(concertoScelto)
+        if scelta.isdigit():
+            scelta = int(scelta)
+            if 0 <= scelta < len(listaConcerti):
+                concerto_scelto = listaConcerti[scelta]
+                if aggiuntaPosti(concerto_scelto):
+                    concertiPrenotati.append(concerto_scelto)
+            else:
+                print("Scelta non valida.")
+        else:
+            print("Inserisci un numero valido.")
 
-            case 2:
-                for n in range(1,3):
-                    concertoScelto = int(input("Inserisci il numero del concerto da aggiungere")) 
-                    listaConcerti.append(listaConcerti[concertoScelto])
-                    aggiuntaPosti(concertoScelto)
-                    postiTiziano, postiShade, postiMirko, postiGeolier, postiMalgioglio, postiGigi = aggiuntaPosti(concertoScelto)
+    print("I tuoi concerti prenotati:", concertiPrenotati)
 
-            case 3:
-                for n in range(1,3):
-                    concertoScelto = int(input("Inserisci il numero del concerto da aggiungere")) 
-                    listaConcerti.append(listaConcerti[concertoScelto])
-                    aggiuntaPosti(concertoScelto)
-                    postiTiziano, postiShade, postiMirko, postiGeolier, postiMalgioglio, postiGigi = aggiuntaPosti(concertoScelto)
+def aggiungiConcerto():
+    """Permette di aggiungere un concerto se si conosce la password segreta"""
+    if ha_password_segreta():
+        nuovo_concerto = input("Inserisci il nome del nuovo concerto: ")
+        if nuovo_concerto not in listaConcerti:
+            listaConcerti.append(nuovo_concerto)
+            postiDisponibili[nuovo_concerto] = 10
+            print(f"Concerto '{nuovo_concerto}' aggiunto con successo!")
+        else:
+            print("Questo concerto esiste già.")
+    else:
+        print("Password segreta errata. Non puoi aggiungere concerti.")
 
+def main():
+    """Gestisce il flusso principale del programma"""
+    print("Benvenuto nel sistema di prenotazione concerti!")
     
+    while True:
+        scelta = input("Vuoi registrarti (R), accedere (L) o uscire (E)? ").upper()
+
+        if scelta == "R":
+            utente = sign_in()
+        elif scelta == "L":
+            utente = login()
+            if utente:
+                while True:
+                    azione = input("Vuoi prenotare un concerto (P), aggiungere un concerto (A) o fare logout (L)? ").upper()
+                    if azione == "P":
+                        prenotaConcerto()
+                    elif azione == "A":
+                        aggiungiConcerto()
+                    elif azione == "L":
+                        break
+                    else:
+                        print("Scelta non valida.")
+        elif scelta == "E":
+            print("Grazie per aver usato il sistema di prenotazione!")
+            break
+        else:
+            print("Scelta non valida.")
+
+# Avvia il programma
+main()
